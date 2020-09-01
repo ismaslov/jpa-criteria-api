@@ -2,6 +2,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -35,15 +36,7 @@ class CountIssue {
 
     @Test
     void getBooksThatHaveMoreThanOneAuthor() {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Book> cc_query = cb.createQuery(Book.class);
-        Root<Book> cc_query_root = cc_query.from(Book.class);
-
-        cc_query.select(cc_query_root.get("title"))
-                .groupBy(cc_query_root.get("title"))
-                .having(cb.gt(cb.count(cc_query_root.get("authors")), 1));
-
-        List<Book> resultList = entityManager.createQuery(cc_query).getResultList();
-        System.out.println(resultList);
+        String query = "SELECT b.title FROM Book b GROUP BY b.title HAVING count(b.authors) > 1";
+        entityManager.createQuery(query, String.class).getResultList();
     }
 }
